@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
     while ( dt > MAX_TEMP_ERROR && iteration <= max_iterations ) {
 
         // main calculation: average my four neighbors
+        #pragma acc kernels
         for(i = 1; i <= ROWS; i++) {
             for(j = 1; j <= COLUMNS; j++) {
                 Temperature[i][j] = 0.25 * (Temperature_last[i+1][j] + Temperature_last[i-1][j] +
@@ -69,6 +70,7 @@ int main(int argc, char *argv[]) {
         dt = 0.0; // reset largest temperature change
 
         // copy grid to old grid for next iteration and find latest dt
+        #pragma acc kernels
         for(i = 1; i <= ROWS; i++){
             for(j = 1; j <= COLUMNS; j++){
               dt = fmax( fabs(Temperature[i][j]-Temperature_last[i][j]), dt);
@@ -100,6 +102,7 @@ void initialize(){
 
     int i,j;
 
+    #pragma acc kernels
     for(i = 0; i <= ROWS+1; i++){
         for (j = 0; j <= COLUMNS+1; j++){
             Temperature_last[i][j] = 0.0;
@@ -109,12 +112,14 @@ void initialize(){
     // these boundary conditions never change throughout run
 
     // set left side to 0 and right to a linear increase
+    #pragma acc kernels
     for(i = 0; i <= ROWS+1; i++) {
         Temperature_last[i][0] = 0.0;
         Temperature_last[i][COLUMNS+1] = (100.0/ROWS)*i;
     }
 
     // set top to 0 and bottom to linear increase
+    #pragma acc kernels
     for(j = 0; j <= COLUMNS+1; j++) {
         Temperature_last[0][j] = 0.0;
         Temperature_last[ROWS+1][j] = (100.0/COLUMNS)*j;

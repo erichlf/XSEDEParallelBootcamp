@@ -5,6 +5,6 @@
 #SBATCH --gres=gpu:p100:1
 #SBATCH -t 5
 #SBATCH -A  tr5fp7p
-#SBATCH --reservation=workshop
+#SBATCH --reservation=workshopGPU
 
-echo "4000" | ./a.out
+echo "4000" | ./laplace_parallel
