@@ -53,6 +53,8 @@ int main(int argc, char *argv[]) {
 
     gettimeofday(&start_time,NULL); // Unix timer
 
+    #pragma acc data create(Temperature_last), copyout(Temperature)
+    {
     initialize();                   // initialize Temp_last including boundary conditions
 
     // do until error is minimal or until max steps
@@ -80,10 +82,12 @@ int main(int argc, char *argv[]) {
 
         // periodically print test values
         if((iteration % 100) == 0) {
+          #pragma acc update host(Temperature)
           track_progress(iteration);
         }
 
       iteration++;
+    }
     }
 
     gettimeofday(&stop_time,NULL);
